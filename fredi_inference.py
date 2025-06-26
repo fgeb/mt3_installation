@@ -60,6 +60,11 @@ class MT3Inference:
                 os.path.join(os.path.join(GIN_DIR, f'{model_type}.gin'))
             ]
 
+        # Debug: Check if gin files exist
+        print(f"Debug: GIN_DIR: {GIN_DIR}")
+        for gin_file in gin_files:
+            print(f"Debug: Gin file '{gin_file}' exists: {os.path.exists(gin_file)}")
+
         self.batch_size = 8
         self.outputs_length = 1024
         self.sequence_length = {
@@ -88,10 +93,14 @@ class MT3Inference:
         model_config = gin.get_configurable(network.T5Config)()
         print(f"Debug: Model config - num_encoder_layers: {model_config.num_encoder_layers}")
         print(f"Debug: Model config - num_decoder_layers: {model_config.num_decoder_layers}")
-        print(f"Debug: Model config - d_model: {model_config.d_model}")
-        print(f"Debug: Model config - num_heads: {model_config.num_heads}")
-        print(f"Debug: Model config - d_kv: {model_config.d_kv}")
-        print(f"Debug: Model config - d_ff: {model_config.d_ff}")
+        print(f"Debug: Model config - vocab_size: {model_config.vocab_size}")
+        print(f"Debug: Model config - d_model: {getattr(model_config, 'd_model', 'N/A')}")
+        print(f"Debug: Model config - num_heads: {getattr(model_config, 'num_heads', 'N/A')}")
+        print(f"Debug: Model config - d_kv: {getattr(model_config, 'd_kv', 'N/A')}")
+        print(f"Debug: Model config - d_ff: {getattr(model_config, 'd_ff', 'N/A')}")
+
+        # Print all available attributes for debugging
+        print(f"Debug: Available T5Config attributes: {[attr for attr in dir(model_config) if not attr.startswith('_')]}")
 
         # Inspect checkpoint structure
         self._inspect_checkpoint(checkpoint_path)
