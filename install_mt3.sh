@@ -6,12 +6,20 @@ set -e
 echo "🚀 MT3 Installation Script"
 echo "=========================="
 
-# Check if running as root and switch to home directory
+# Get the correct home directory even when running as root
 if [ "$EUID" -eq 0 ]; then
-    echo "⚠️  Script is running as root. Switching to home directory..."
-    cd /home/$(logname) || cd ~
-    echo "Working directory: $(pwd)"
+    # If running as root, get the home directory of the user who invoked sudo
+    REAL_USER=${SUDO_USER:-$(logname)}
+    HOME_DIR=$(eval echo ~$REAL_USER)
+    echo "⚠️  Script is running as root. Using home directory: $HOME_DIR"
+else
+    HOME_DIR=$HOME
+    echo "Using home directory: $HOME_DIR"
 fi
+
+# Change to the correct home directory
+cd "$HOME_DIR"
+echo "Working directory: $(pwd)"
 
 # Step 1: Fix apt_pkg module issue
 echo ""
@@ -58,15 +66,15 @@ sudo apt install -y \
 # Step 4: Clean up any existing installation
 echo ""
 echo "🧹 Step 4: Cleaning up any existing installation..."
-if [ -d ~/mt3_setup ]; then
-    rm -rf ~/mt3_setup
-    echo "✅ Removed existing ~/mt3_setup"
+if [ -d "$HOME_DIR/mt3_setup" ]; then
+    rm -rf "$HOME_DIR/mt3_setup"
+    echo "✅ Removed existing $HOME_DIR/mt3_setup"
 fi
 
 # Step 5: Create project directory and clone MT3
 echo ""
 echo "📁 Step 5: Setting up MT3 project in home directory..."
-mkdir -p ~/mt3_setup && cd ~/mt3_setup
+mkdir -p "$HOME_DIR/mt3_setup" && cd "$HOME_DIR/mt3_setup"
 git clone https://github.com/magenta/mt3.git
 cd mt3
 
@@ -98,7 +106,7 @@ pip install gin-config t5x note-seq
 # Step 10: Install Google Cloud SDK
 echo ""
 echo "☁️ Step 10: Installing Google Cloud SDK..."
-cd ~/mt3_setup
+cd "$HOME_DIR/mt3_setup"
 curl -O https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-cli-474.0.0-linux-x86_64.tar.gz
 tar -xf google-cloud-cli-474.0.0-linux-x86_64.tar.gz
 ./google-cloud-sdk/install.sh --quiet
@@ -118,13 +126,13 @@ echo ""
 echo "🎉 Installation complete!"
 echo "========================"
 echo ""
-echo "📁 Installation location: ~/mt3_setup"
+echo "📁 Installation location: $HOME_DIR/mt3_setup"
 echo "🐍 Python version: $(python3 --version)"
 echo ""
 echo "To activate your MT3 environment, run:"
-echo "  source ~/mt3_setup/mt3/mt3-venv/bin/activate"
+echo "  source $HOME_DIR/mt3_setup/mt3/mt3-venv/bin/activate"
 echo ""
 echo "To test the installation, run:"
-echo "  source ~/mt3_setup/mt3/mt3-venv/bin/activate"
-echo "  cd ~/mt3_setup/mt3"
+echo "  source $HOME_DIR/mt3_setup/mt3/mt3-venv/bin/activate"
+echo "  cd $HOME_DIR/mt3_setup/mt3"
 echo "  python -c \"import mt3; print('✅ MT3 imported successfully!')\""
