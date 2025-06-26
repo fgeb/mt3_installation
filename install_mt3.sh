@@ -5,6 +5,9 @@ set -e
 
 echo "✅ Updating and installing system dependencies..."
 sudo apt update
+sudo apt install -y software-properties-common
+sudo add-apt-repository ppa:deadsnakes/ppa -y
+sudo apt update
 sudo apt install -y \
     python3.10 \
     python3.10-venv \
