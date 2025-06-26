@@ -5,9 +5,6 @@ set -e
 
 echo "✅ Updating and installing system dependencies..."
 sudo apt update
-sudo apt install -y software-properties-common
-sudo add-apt-repository ppa:deadsnakes/ppa -y
-sudo apt update
 sudo apt install -y \
     python3.10 \
     python3.10-venv \
@@ -28,23 +25,6 @@ sudo apt install -y \
     zip \
     g++
 
-echo "✅ Making Python 3.10 default for python3..."
-sudo update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.10 1
-sudo update-alternatives --install /usr/bin/python python /usr/bin/python3.10 1
-
-echo "✅ Fixing apt_pkg module issue..."
-# Reinstall python3-apt to fix the apt_pkg module issue
-sudo apt install --reinstall python3-apt
-
-# Find the correct apt_pkg module and create symlink
-APT_PKG_PATH=$(find /usr/lib/python3/dist-packages -name "apt_pkg.cpython-*.so" | head -1)
-if [ -n "$APT_PKG_PATH" ]; then
-    sudo ln -sf "$APT_PKG_PATH" /usr/lib/python3/dist-packages/apt_pkg.so
-    echo "✅ Created symlink: $APT_PKG_PATH -> /usr/lib/python3/dist-packages/apt_pkg.so"
-else
-    echo "⚠️  Warning: Could not find apt_pkg.cpython-*.so file"
-fi
-
 echo "✅ Creating project directory..."
 mkdir -p ~/mt3_setup && cd ~/mt3_setup
 
@@ -52,8 +32,8 @@ echo "✅ Cloning MT3 repo..."
 git clone https://github.com/magenta/mt3.git
 cd mt3
 
-echo "✅ Creating and activating virtual environment..."
-python3 -m venv mt3-3.10
+echo "✅ Creating and activating virtual environment with Python 3.10..."
+python3.10 -m venv mt3-3.10
 source mt3-3.10/bin/activate
 
 echo "✅ Upgrading pip..."
