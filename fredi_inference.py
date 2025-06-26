@@ -51,13 +51,13 @@ class MT3Inference:
         # Set gin file paths based on model type
         if model_type == 'ismir2022_base':
             gin_files = [
-                os.path.join(script_dir, os.path.join(GIN_DIR, 'model.gin')),
-                os.path.join(script_dir, os.path.join(GIN_DIR, 'ismir2022', 'base.gin'))
+                os.path.join(os.path.join(GIN_DIR, 'model.gin')),
+                os.path.join(os.path.join(GIN_DIR, 'ismir2022', 'base.gin'))
             ]
         else:
             gin_files = [
-                os.path.join(script_dir, os.path.join(GIN_DIR, 'model.gin')),
-                os.path.join(script_dir, os.path.join(GIN_DIR, f'{model_type}.gin'))
+                os.path.join(os.path.join(GIN_DIR, 'model.gin')),
+                os.path.join(os.path.join(GIN_DIR, f'{model_type}.gin'))
             ]
 
         self.batch_size = 8
