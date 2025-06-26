@@ -22,6 +22,7 @@ from mt3 import vocabularies
 
 
 BASE_DIR = '~/mt3_setup/mt3/mt3/'
+GIN_DIR = os.path.join(BASE_DIR, 'gin')
 
 class MT3Inference:
     """Wrapper for MT3 model inference."""
@@ -50,13 +51,13 @@ class MT3Inference:
         # Set gin file paths based on model type
         if model_type == 'ismir2022_base':
             gin_files = [
-                os.path.join(script_dir, os.path.join(BASE_DIR, 'gin', 'model.gin')),
-                os.path.join(script_dir, os.path.join(BASE_DIR, 'gin', 'ismir2022', 'base.gin'))
+                os.path.join(script_dir, os.path.join(GIN_DIR, 'model.gin')),
+                os.path.join(script_dir, os.path.join(GIN_DIR, 'ismir2022', 'base.gin'))
             ]
         else:
             gin_files = [
-                os.path.join(script_dir, os.path.join(BASE_DIR, 'gin', 'model.gin')),
-                os.path.join(script_dir, os.path.join(BASE_DIR, 'gin', f'{model_type}.gin'))
+                os.path.join(script_dir, os.path.join(GIN_DIR, 'model.gin')),
+                os.path.join(script_dir, os.path.join(GIN_DIR, f'{model_type}.gin'))
             ]
 
         self.batch_size = 8
@@ -106,7 +107,6 @@ class MT3Inference:
         """Parse gin files used to train the model."""
         # Get the directory of this script
         script_dir = os.path.dirname(os.path.abspath(__file__))
-        os.path.join(script_dir, os.path.join(BASE_DIR, 'gin'))
 
         gin_bindings = [
             'from __gin__ import dynamic_registration',
@@ -129,7 +129,7 @@ class MT3Inference:
 
         with gin.unlock_config():
             # Set the gin search path to include the mt3/gin directory
-            gin.add_config_file_search_path(gin_dir)
+            gin.add_config_file_search_path(GIN_DIR)
             gin.parse_config_files_and_bindings(
                 gin_files, gin_bindings, finalize_config=False)
 
