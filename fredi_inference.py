@@ -84,6 +84,16 @@ class MT3Inference:
         self._parse_gin(gin_files)
         self.model = self._load_model()
 
+        # Debug: Print model configuration
+        model_config = gin.get_configurable(network.T5Config)()
+        print(f"Debug: Model config - num_layers: {model_config.num_layers}")
+        print(f"Debug: Model config - num_decoder_layers: {model_config.num_decoder_layers}")
+        print(f"Debug: Model config - d_model: {model_config.d_model}")
+        print(f"Debug: Model config - num_heads: {model_config.num_heads}")
+
+        # Inspect checkpoint structure
+        self._inspect_checkpoint(checkpoint_path)
+
         # Restore from checkpoint
         self.restore_from_checkpoint(checkpoint_path)
 
@@ -142,6 +152,39 @@ class MT3Inference:
             output_vocabulary=self.output_features['targets'].vocabulary,
             optimizer_def=t5x.adafactor.Adafactor(decay_rate=0.8, step_offset=0),
             input_depth=spectrograms.input_depth(self.spectrogram_config))
+
+    def _inspect_checkpoint(self, checkpoint_path):
+        """Inspect checkpoint structure to understand model architecture."""
+        try:
+            import tensorflow as tf
+            checkpoint = tf.train.load_checkpoint(checkpoint_path)
+            var_to_shape_map = checkpoint.get_variable_to_shape_map()
+
+            print(f"Debug: Checkpoint variables count: {len(var_to_shape_map)}")
+
+            # Look for decoder layers
+            decoder_layers = [k for k in var_to_shape_map.keys() if 'decoder' in k and 'layers_' in k]
+            decoder_layers.sort()
+
+            print(f"Debug: Decoder layers in checkpoint: {decoder_layers}")
+
+            if decoder_layers:
+                layer_numbers = []
+                for layer in decoder_layers:
+                    # Extract layer number from key like "decoder/layers_0/..."
+                    parts = layer.split('/')
+                    for part in parts:
+                        if part.startswith('layers_'):
+                            layer_num = int(part.split('_')[1])
+                            layer_numbers.append(layer_num)
+                            break
+
+                layer_numbers = sorted(set(layer_numbers))
+                print(f"Debug: Decoder layer numbers: {layer_numbers}")
+                print(f"Debug: Number of decoder layers: {len(layer_numbers)}")
+
+        except Exception as e:
+            print(f"Debug: Could not inspect checkpoint: {e}")
 
     def restore_from_checkpoint(self, checkpoint_path):
         """Restore training state from checkpoint."""
