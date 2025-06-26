@@ -12,6 +12,7 @@ sudo apt install -y \
     python3.10 \
     python3.10-venv \
     python3.10-dev \
+    python3-apt \
     build-essential \
     git \
     curl \
@@ -30,6 +31,19 @@ sudo apt install -y \
 echo "✅ Making Python 3.10 default for python3..."
 sudo update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.10 1
 sudo update-alternatives --install /usr/bin/python python /usr/bin/python3.10 1
+
+echo "✅ Fixing apt_pkg module issue..."
+# Reinstall python3-apt to fix the apt_pkg module issue
+sudo apt install --reinstall python3-apt
+
+# Find the correct apt_pkg module and create symlink
+APT_PKG_PATH=$(find /usr/lib/python3/dist-packages -name "apt_pkg.cpython-*.so" | head -1)
+if [ -n "$APT_PKG_PATH" ]; then
+    sudo ln -sf "$APT_PKG_PATH" /usr/lib/python3/dist-packages/apt_pkg.so
+    echo "✅ Created symlink: $APT_PKG_PATH -> /usr/lib/python3/dist-packages/apt_pkg.so"
+else
+    echo "⚠️  Warning: Could not find apt_pkg.cpython-*.so file"
+fi
 
 echo "✅ Creating project directory..."
 mkdir -p ~/mt3_setup && cd ~/mt3_setup
