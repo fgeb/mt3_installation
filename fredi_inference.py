@@ -21,7 +21,7 @@ from mt3 import spectrograms
 from mt3 import vocabularies
 
 
-BASE_DIR = '~/mt3_setup/mt3/mt3/'
+BASE_DIR = '/home/fredi/mt3_setup/mt3/mt3/'
 GIN_DIR = os.path.join(BASE_DIR, 'gin')
 
 class MT3Inference:
@@ -106,7 +106,6 @@ class MT3Inference:
     def _parse_gin(self, gin_files):
         """Parse gin files used to train the model."""
         # Get the directory of this script
-        script_dir = os.path.dirname(os.path.abspath(__file__))
 
         gin_bindings = [
             'from __gin__ import dynamic_registration',
