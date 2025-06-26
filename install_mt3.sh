@@ -122,11 +122,28 @@ cd checkpoints
 gsutil -m cp -r gs://mt3/checkpoints/ismir2021 .
 cd ..
 
+# Step 12: Create audio folder and copy test file
+echo ""
+echo "🎵 Step 12: Setting up audio folder..."
+mkdir -p "$HOME_DIR/audio"
+
+# Copy test audio file if it exists in the current directory
+if [ -f "test_audio.wav" ]; then
+    cp test_audio.wav "$HOME_DIR/audio/"
+    echo "✅ Copied test_audio.wav to $HOME_DIR/audio/"
+elif [ -f "*.wav" ]; then
+    cp *.wav "$HOME_DIR/audio/"
+    echo "✅ Copied wav files to $HOME_DIR/audio/"
+else
+    echo "ℹ️  No wav files found in current directory"
+fi
+
 echo ""
 echo "🎉 Installation complete!"
 echo "========================"
 echo ""
 echo "📁 Installation location: $HOME_DIR/mt3_setup"
+echo "🎵 Audio folder: $HOME_DIR/audio"
 echo "🐍 Python version: $(python3 --version)"
 echo ""
 echo "To activate your MT3 environment, run:"
