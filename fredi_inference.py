@@ -86,10 +86,12 @@ class MT3Inference:
 
         # Debug: Print model configuration
         model_config = gin.get_configurable(network.T5Config)()
-        print(f"Debug: Model config - num_layers: {model_config.num_layers}")
+        print(f"Debug: Model config - num_encoder_layers: {model_config.num_encoder_layers}")
         print(f"Debug: Model config - num_decoder_layers: {model_config.num_decoder_layers}")
         print(f"Debug: Model config - d_model: {model_config.d_model}")
         print(f"Debug: Model config - num_heads: {model_config.num_heads}")
+        print(f"Debug: Model config - d_kv: {model_config.d_kv}")
+        print(f"Debug: Model config - d_ff: {model_config.d_ff}")
 
         # Inspect checkpoint structure
         self._inspect_checkpoint(checkpoint_path)
