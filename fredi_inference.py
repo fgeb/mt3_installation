@@ -106,7 +106,7 @@ class MT3Inference:
         """Parse gin files used to train the model."""
         # Get the directory of this script
         script_dir = os.path.dirname(os.path.abspath(__file__))
-        os.path.join(script_dir, os.path.join(BASE_DIR, 'gin')
+        os.path.join(script_dir, os.path.join(BASE_DIR, 'gin'))
 
         gin_bindings = [
             'from __gin__ import dynamic_registration',
